@@ -12,8 +12,18 @@ export type TechCategory =
 
 export type TechIconId =
   | 'react'
+  | 'nextjs'
+  | 'typescript'
+  | 'javascript'
   | 'firebase'
   | 'tailwind'
+  | 'vercel'
+  | 'pwa'
+  | 'nodejs'
+  | 'python'
+  | 'threejs'
+  | 'formula'
+  | 'bilingual'
   | 'code'
   | 'database'
   | 'server'
@@ -74,7 +84,17 @@ const TECH_RULES: TechRule[] = [
     dotClass: 'bg-sky-400',
   },
   {
-    match: /^(next(\.?js)?|vite|vue(\.?js)?|angular|svelte|astro|web\s*platform|web\s*app)$/i,
+    match: /^next(\.?js)?$/i,
+    category: 'frontend',
+    iconId: 'nextjs',
+    accentHex: '#E5E7EB',
+    borderClass: 'border-slate-300/35 hover:border-white/70',
+    bgClass: 'bg-white/[0.08]',
+    textClass: 'text-slate-100',
+    dotClass: 'bg-slate-200',
+  },
+  {
+    match: /^(vite|vue(\.?js)?|angular|svelte|astro|web\s*platform|web\s*app)$/i,
     category: 'frontend',
     iconId: 'globe',
     accentHex: '#00D9FF',
@@ -114,7 +134,17 @@ const TECH_RULES: TechRule[] = [
     dotClass: 'bg-emerald-400',
   },
   {
-    match: /^(node(\.?js)?|express(\.?js)?|nest(\.?js)?|graphql|rest\s*api)$/i,
+    match: /^node(\.?js)?$/i,
+    category: 'backend',
+    iconId: 'nodejs',
+    accentHex: '#34D399',
+    borderClass: 'border-emerald-400/35 hover:border-emerald-300/70',
+    bgClass: 'bg-emerald-500/10',
+    textClass: 'text-emerald-200',
+    dotClass: 'bg-emerald-400',
+  },
+  {
+    match: /^(express(\.?js)?|nest(\.?js)?|graphql|rest\s*api)$/i,
     category: 'backend',
     iconId: 'server',
     accentHex: '#34D399',
@@ -124,7 +154,37 @@ const TECH_RULES: TechRule[] = [
     dotClass: 'bg-emerald-400',
   },
   {
-    match: /^(typescript|ts|javascript|js|python|java|c\+\+|c#|go|rust|php|html5?)$/i,
+    match: /^(typescript|ts)$/i,
+    category: 'language',
+    iconId: 'typescript',
+    accentHex: '#3B82F6',
+    borderClass: 'border-blue-400/35 hover:border-blue-300/70',
+    bgClass: 'bg-blue-500/10',
+    textClass: 'text-blue-200',
+    dotClass: 'bg-blue-400',
+  },
+  {
+    match: /^(javascript|js)$/i,
+    category: 'language',
+    iconId: 'javascript',
+    accentHex: '#FACC15',
+    borderClass: 'border-yellow-400/35 hover:border-yellow-300/70',
+    bgClass: 'bg-yellow-500/10',
+    textClass: 'text-yellow-200',
+    dotClass: 'bg-yellow-400',
+  },
+  {
+    match: /^python$/i,
+    category: 'language',
+    iconId: 'python',
+    accentHex: '#60A5FA',
+    borderClass: 'border-blue-400/35 hover:border-blue-300/70',
+    bgClass: 'bg-blue-500/10',
+    textClass: 'text-blue-200',
+    dotClass: 'bg-blue-400',
+  },
+  {
+    match: /^(java|c\+\+|c#|go|rust|php|html5?)$/i,
     category: 'language',
     iconId: 'code',
     accentHex: '#60A5FA',
@@ -134,7 +194,17 @@ const TECH_RULES: TechRule[] = [
     dotClass: 'bg-blue-400',
   },
   {
-    match: /^(pwa|android|ios|flutter|kotlin|dart|mobile\s*ux|apk)$/i,
+    match: /^pwa$/i,
+    category: 'mobile',
+    iconId: 'pwa',
+    accentHex: '#2DD4BF',
+    borderClass: 'border-teal-400/35 hover:border-teal-300/70',
+    bgClass: 'bg-teal-500/10',
+    textClass: 'text-teal-200',
+    dotClass: 'bg-teal-400',
+  },
+  {
+    match: /^(android|ios|flutter|kotlin|dart|mobile\s*ux|apk)$/i,
     category: 'mobile',
     iconId: 'mobile',
     accentHex: '#2DD4BF',
@@ -144,7 +214,17 @@ const TECH_RULES: TechRule[] = [
     dotClass: 'bg-teal-400',
   },
   {
-    match: /(^ai(\s|$)|gemini|openai|machine\s*learning|ml|llm|tensorflow|pytorch|formula\s*hub)/i,
+    match: /formula\s*hub/i,
+    category: 'ai',
+    iconId: 'formula',
+    accentHex: '#C084FC',
+    borderClass: 'border-purple-400/40 hover:border-purple-300/80',
+    bgClass: 'bg-purple-500/12',
+    textClass: 'text-purple-200',
+    dotClass: 'bg-purple-400',
+  },
+  {
+    match: /(^ai(\s|$)|gemini|openai|machine\s*learning|ml|llm|tensorflow|pytorch)/i,
     category: 'ai',
     iconId: 'ai',
     accentHex: '#A855F7',
@@ -154,7 +234,17 @@ const TECH_RULES: TechRule[] = [
     dotClass: 'bg-purple-400',
   },
   {
-    match: /^(three(\.?js)?|webgl|3d|blender|figma|ui\/ux|canvas)$/i,
+    match: /^(three(\.?js)?|webgl|3d)$/i,
+    category: 'graphics',
+    iconId: 'threejs',
+    accentHex: '#C084FC',
+    borderClass: 'border-fuchsia-400/35 hover:border-fuchsia-300/70',
+    bgClass: 'bg-fuchsia-500/10',
+    textClass: 'text-fuchsia-200',
+    dotClass: 'bg-fuchsia-400',
+  },
+  {
+    match: /^(blender|figma|ui\/ux|canvas)$/i,
     category: 'graphics',
     iconId: 'cube',
     accentHex: '#C084FC',
@@ -164,7 +254,27 @@ const TECH_RULES: TechRule[] = [
     dotClass: 'bg-fuchsia-400',
   },
   {
-    match: /^(vercel|netlify|github|docker|aws|gcp|bilingual.*)$/i,
+    match: /^vercel$/i,
+    category: 'platform',
+    iconId: 'vercel',
+    accentHex: '#FFFFFF',
+    borderClass: 'border-white/30 hover:border-white/70',
+    bgClass: 'bg-white/[0.08]',
+    textClass: 'text-white',
+    dotClass: 'bg-white',
+  },
+  {
+    match: /^bilingual.*$/i,
+    category: 'platform',
+    iconId: 'bilingual',
+    accentHex: '#38BDF8',
+    borderClass: 'border-sky-300/35 hover:border-sky-200/70',
+    bgClass: 'bg-sky-400/10',
+    textClass: 'text-sky-100',
+    dotClass: 'bg-sky-300',
+  },
+  {
+    match: /^(netlify|github|docker|aws|gcp)$/i,
     category: 'platform',
     iconId: 'cloud',
     accentHex: '#C8C8D8',
@@ -285,3 +395,30 @@ export function resolveProjectTechStack(
 
   return deduped;
 }
+
+/**
+ * Formats a concise, readable brief description for the ProjectCard hover reveal overlay.
+ * Prefers natural sentence boundaries (. ! ? ।) when within maxChars, otherwise trims cleanly on a word boundary.
+ */
+export function buildBriefProjectDescription(rawDescription: string, maxChars = 175): string {
+  const normalized = rawDescription.replace(/\s+/g, ' ').trim();
+  if (!normalized) return '';
+  if (normalized.length <= maxChars) return normalized;
+
+  const slice = normalized.slice(0, maxChars);
+  const sentenceEndMatch = slice.match(/^(.{48,}?[.!?।])(?:\s|$)/);
+  if (sentenceEndMatch?.[1]) {
+    return sentenceEndMatch[1].trim();
+  }
+
+  const lastSpace = slice.lastIndexOf(' ');
+  const cutoff = lastSpace >= Math.floor(maxChars * 0.55) ? lastSpace : maxChars;
+  const cleaned = slice
+    .slice(0, cutoff)
+    .replace(/[\s,;:\-—–•·&]+$/u, '')
+    .replace(/\s+(?:and|or|with|for|of|to|in|on|a|an|the|&|ও|এবং)$/iu, '')
+    .replace(/[\s,;:\-—–•·&]+$/u, '')
+    .trim();
+  return `${cleaned}…`;
+}
+

@@ -1,56 +1,13 @@
-import {
-  Atom,
-  Flame,
-  Wind,
-  Code2,
-  Database,
-  Server,
-  Smartphone,
-  Sparkles,
-  Box,
-  Cloud,
-  Globe,
-  Layers,
-  Cpu,
-} from 'lucide-react';
+import { Cpu } from 'lucide-react';
+import { TechStackIcon } from './TechStackIcon';
 import type { Language } from '../types/portfolio';
-import type { TechBadgeDescriptor, TechIconId } from '../utils/techStack';
+import type { TechBadgeDescriptor } from '../utils/techStack';
 
 interface TechStackBadgesProps {
   badges: TechBadgeDescriptor[];
   heading: string;
   lang?: Language;
   variant?: 'card' | 'modal' | 'preview';
-}
-
-function TechMicroIcon({ iconId, className }: { iconId: TechIconId; className?: string }) {
-  const cls = className || 'w-3.5 h-3.5 shrink-0';
-  switch (iconId) {
-    case 'react':
-      return <Atom className={cls} aria-hidden="true" />;
-    case 'firebase':
-      return <Flame className={cls} aria-hidden="true" />;
-    case 'tailwind':
-      return <Wind className={cls} aria-hidden="true" />;
-    case 'code':
-      return <Code2 className={cls} aria-hidden="true" />;
-    case 'database':
-      return <Database className={cls} aria-hidden="true" />;
-    case 'server':
-      return <Server className={cls} aria-hidden="true" />;
-    case 'mobile':
-      return <Smartphone className={cls} aria-hidden="true" />;
-    case 'ai':
-      return <Sparkles className={cls} aria-hidden="true" />;
-    case 'cube':
-      return <Box className={cls} aria-hidden="true" />;
-    case 'cloud':
-      return <Cloud className={cls} aria-hidden="true" />;
-    case 'globe':
-      return <Globe className={cls} aria-hidden="true" />;
-    default:
-      return <Layers className={cls} aria-hidden="true" />;
-  }
 }
 
 export function TechStackBadges({
@@ -100,7 +57,7 @@ export function TechStackBadges({
                 isModal ? 'px-3 py-1.5 text-xs' : 'px-2.5 py-1 text-[11px] sm:text-xs'
               }`}
             >
-              <TechMicroIcon
+              <TechStackIcon
                 iconId={badge.iconId}
                 className={isModal ? 'w-3.5 h-3.5 shrink-0 opacity-95' : 'w-3 h-3 shrink-0 opacity-95'}
               />

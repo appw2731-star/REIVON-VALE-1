@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  buildBriefProjectDescription,
   classifyTechnology,
   extractTechnologiesFromText,
   resolveProjectTechStack,
@@ -30,6 +31,18 @@ test('classifyTechnology automatically highlights React, Firebase, Tailwind, and
   const custom = classifyTechnology('Custom Academic Tool');
   assert.equal(custom.isRecognized, false);
   assert.equal(custom.iconId, 'layers');
+});
+
+test('classifyTechnology resolves specific SVG icon IDs for Vercel, PWA, TypeScript, Next.js, Formula Hub, and Bilingual', () => {
+  assert.equal(classifyTechnology('Vercel').iconId, 'vercel');
+  assert.equal(classifyTechnology('PWA').iconId, 'pwa');
+  assert.equal(classifyTechnology('TypeScript').iconId, 'typescript');
+  assert.equal(classifyTechnology('JavaScript').iconId, 'javascript');
+  assert.equal(classifyTechnology('Next.js').iconId, 'nextjs');
+  assert.equal(classifyTechnology('Node.js').iconId, 'nodejs');
+  assert.equal(classifyTechnology('Formula Hub').iconId, 'formula');
+  assert.equal(classifyTechnology('Bilingual EN/বাংলা').iconId, 'bilingual');
+  assert.equal(classifyTechnology('Three.js').iconId, 'threejs');
 });
 
 test('resolveProjectTechStack deduplicates explicit technologies case-insensitively', () => {
@@ -73,3 +86,30 @@ test('extractTechnologiesFromText respects maxItems cap and avoids false matches
   );
   assert.equal(capped.length, 4);
 });
+
+test('buildBriefProjectDescription returns concise clean summaries for hover overlays', () => {
+  assert.equal(buildBriefProjectDescription('   '), '');
+  assert.equal(buildBriefProjectDescription('Short summary text.', 120), 'Short summary text.');
+
+  const multiSentence =
+    'A dedicated study platform built for Bangladesh Polytechnic students with interactive tools. It also adds extra modules for semester prep, MCQ testing, and community study rooms.';
+  const brief = buildBriefProjectDescription(multiSentence, 120);
+  assert.equal(
+    brief,
+    'A dedicated study platform built for Bangladesh Polytechnic students with interactive tools.'
+  );
+
+  const singleLong =
+    'A comprehensive diploma engineering study workspace offering PDF libraries, formula sheets, AI tutor explanations, study timers, routine planners, and exam practice tests';
+  const trimmed = buildBriefProjectDescription(singleLong, 100);
+  assert.equal(trimmed.endsWith('…'), true);
+  assert.equal(trimmed.length <= 101, true);
+  assert.equal(trimmed.includes('formu…'), false);
+
+  const trailingAmpersand =
+    'A dedicated study platform built for Bangladesh Polytechnic students featuring PDF library, Formula Hub, AI Tutor, BTEB Result access, MCQ & Model Tests and Study Timer';
+  const cleanCut = buildBriefProjectDescription(trailingAmpersand, 141);
+  assert.equal(cleanCut.endsWith('&…'), false);
+  assert.equal(cleanCut.endsWith('…'), true);
+});
+

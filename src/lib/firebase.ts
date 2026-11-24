@@ -3,14 +3,18 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
+import { OWNER_ADMIN_EMAIL } from '../utils/adminAuth';
+
 const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
+export const OWNER_EMAIL = OWNER_ADMIN_EMAIL;
 export const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({ prompt: 'select_account' });
-
-export const OWNER_EMAIL = 'webrokib@gmail.com';
+googleProvider.setCustomParameters({
+  prompt: 'select_account',
+  login_hint: OWNER_EMAIL,
+});
 
 export enum OperationType {
   CREATE = 'create',

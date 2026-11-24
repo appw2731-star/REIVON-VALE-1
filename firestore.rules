@@ -29,10 +29,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isVerifiedUser() && (
-        request.auth.token.email == 'webrokib@gmail.com' ||
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-      );
+      return isVerifiedUser() && request.auth.token.email == 'webrokib@gmail.com';
     }
 
     function isValidStringList(arr, maxLen) {
@@ -198,10 +195,9 @@ service cloud.firestore {
         && data.updatedAt is timestamp;
     }
 
-    // Admin Allowlist — Public & Client Writes Strictly Forbidden
+    // Legacy Admin Allowlist Collection — All Reads & Writes Strictly Denied
     match /admins/{uid} {
-      allow get: if isSignedIn() && isValidId(uid) && request.auth.uid == uid;
-      allow list, create, update, delete: if false;
+      allow read, write: if false;
     }
 
     // Connection Probe Document (Read-Only for Startup Connectivity Check)

@@ -70,6 +70,9 @@ export interface TranslationDictionary {
     closeDetails: string;
     technologiesLabel: string;
     techStackLabel: string;
+    briefSummaryLabel: string;
+    hoverHint: string;
+    toggleSummary: string;
     emptyCategory: string;
     categories: Record<ProjectCategory, string>;
     statuses: Record<ProjectStatus, string>;
@@ -162,6 +165,8 @@ export interface TranslationDictionary {
     unauthorizedTitle: string;
     unauthorizedDesc: string;
     ownerOnlyNotice: string;
+    allowedAccountLabel: string;
+    rejectedAccountPrefix: string;
     tabs: {
       overview: string;
       profile: string;
@@ -260,6 +265,9 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       closeDetails: 'Close project details',
       technologiesLabel: 'Technologies',
       techStackLabel: 'Tech Stack',
+      briefSummaryLabel: 'Brief Overview',
+      hoverHint: 'Hover for overview',
+      toggleSummary: 'Toggle brief overview',
       emptyCategory: 'No projects published in this category yet.',
       categories: {
         websites: 'Websites',
@@ -366,9 +374,11 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       backToSite: 'Return to Portfolio',
       signInWithGoogle: 'Sign in with Owner Google Account',
       signOut: 'Sign Out',
-      unauthorizedTitle: 'Owner Authorization Required',
-      unauthorizedDesc: 'This signed-in account does not have administrative permissions for REIVON VALE. Public account creation is disabled.',
-      ownerOnlyNotice: 'Protected by server-enforced Firestore Security Rules. Only the authorized owner account can modify content or read messages.',
+      unauthorizedTitle: 'Access Denied — Owner Only',
+      unauthorizedDesc: 'Only webrokib@gmail.com is allowed to log in as admin. Any other Google account is blocked and signed out automatically.',
+      ownerOnlyNotice: 'Admin login is strictly restricted to webrokib@gmail.com and enforced server-side by Firestore Security Rules. No other ID can log in.',
+      allowedAccountLabel: 'Authorized Admin Gmail',
+      rejectedAccountPrefix: 'Blocked & signed out:',
       tabs: {
         overview: 'Overview',
         profile: 'About & Profile',
@@ -465,6 +475,9 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       closeDetails: 'বিস্তারিত বন্ধ করুন',
       technologiesLabel: 'ব্যবহৃত প্রযুক্তি',
       techStackLabel: 'টেক স্ট্যাক',
+      briefSummaryLabel: 'সংক্ষিপ্ত বিবরণ',
+      hoverHint: 'বিবরণ দেখতে হোভার করুন',
+      toggleSummary: 'সংক্ষিপ্ত বিবরণ দেখুন',
       emptyCategory: 'এই বিভাগে এখনো কোনো প্রজেক্ট নেই।',
       categories: {
         websites: 'ওয়েবসাইট',
@@ -571,9 +584,11 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       backToSite: 'পোর্টফোলিওতে ফিরুন',
       signInWithGoogle: 'মালিকের গুগল অ্যাকাউন্টে লগইন',
       signOut: 'লগ আউট',
-      unauthorizedTitle: 'মালিকের অনুমোদন প্রয়োজন',
-      unauthorizedDesc: 'এই অ্যাকাউন্টটির REIVON VALE অ্যাডমিন অনুমতি নেই। সাধারণ ভিজিটরদের জন্য অ্যাডমিন অ্যাকাউন্ট তৈরি বন্ধ রয়েছে।',
-      ownerOnlyNotice: 'সার্ভার-নিয়ন্ত্রিত সিকিউরিটি রুল দ্বারা সুরক্ষিত। শুধুমাত্র অনুমোদিত মালিক কনটেন্ট পরিবর্তন ও বার্তা দেখতে পারবেন।',
+      unauthorizedTitle: 'প্রবেশাধিকার নেই — শুধুমাত্র অ্যাডমিন',
+      unauthorizedDesc: 'শুধুমাত্র webrokib@gmail.com দিয়েই অ্যাডমিন লগইন করা যাবে। অন্য কোনো গুগল অ্যাকাউন্ট অনুমোদিত নয় এবং স্বয়ংক্রিয়ভাবে লগ আউট করা হয়েছে।',
+      ownerOnlyNotice: 'অ্যাডমিন লগইন শুধুমাত্র webrokib@gmail.com-এর জন্য সংরক্ষিত এবং সার্ভার-সাইড Firestore সিকিউরিটি রুল দিয়ে সুরক্ষিত। অন্য কোনো আইডি দিয়ে লগইন করা যাবে না।',
+      allowedAccountLabel: 'অনুমোদিত অ্যাডমিন জিমেইল',
+      rejectedAccountPrefix: 'অননুমোদিত অ্যাকাউন্ট বাতিল করা হয়েছে:',
       tabs: {
         overview: 'সারাংশ',
         profile: 'পরিচিতি ও প্রোফাইল',

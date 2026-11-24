@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
 import {
   ArrowLeft,
   LogOut,
   ShieldCheck,
+  ShieldAlert,
   LayoutDashboard,
   UserCircle2,
   Cpu,
@@ -15,7 +15,8 @@ import {
   Settings,
   Database,
 } from 'lucide-react';
-import { auth, db, googleProvider, OWNER_EMAIL } from '../../lib/firebase';
+import { auth, googleProvider, OWNER_EMAIL } from '../../lib/firebase';
+import { isAuthorizedOwnerAccount } from '../../utils/adminAuth';
 import { fetchContactMessages, seedDefaultsToDatabase } from '../../lib/portfolioService';
 import { AdminProfileTab, AdminSettingsTab } from './AdminProfileSettingsTabs';
 import { AdminSkillsTab, AdminProjectsTab, AdminGalleryTab } from './AdminCatalogTabs';
@@ -49,6 +50,7 @@ export function AdminDashboard({
   const [user, setUser] = useState<User | null>(auth.currentUser);
   const [authLoading, setAuthLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [rejectedEmail, setRejectedEmail] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [messages, setMessages] = useState<ContactMessageItem[]>([]);
@@ -66,30 +68,33 @@ export function AdminDashboard({
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
       if (!currentUser) {
+        setUser(null);
         setIsAuthorized(false);
         setAuthLoading(false);
         return;
       }
 
-      const verifiedOwner =
-        Boolean(currentUser.emailVerified) &&
-        currentUser.email?.toLowerCase() === OWNER_EMAIL.toLowerCase();
-
-      if (verifiedOwner) {
+      if (isAuthorizedOwnerAccount(currentUser)) {
+        setUser(currentUser);
         setIsAuthorized(true);
+        setRejectedEmail(null);
+        setAuthError(null);
         setAuthLoading(false);
         return;
       }
 
+      // Immediately revoke session for any account other than verified webrokib@gmail.com
+      const attemptedEmail = currentUser.email ?? 'Unknown account';
+      setRejectedEmail(attemptedEmail);
+      setIsAuthorized(false);
+      setUser(null);
+      setMessages([]);
+      setAuthLoading(false);
       try {
-        const adminDoc = await getDoc(doc(db, 'admins', currentUser.uid));
-        setIsAuthorized(Boolean(currentUser.emailVerified && adminDoc.exists()));
+        await signOut(auth);
       } catch {
-        setIsAuthorized(false);
-      } finally {
-        setAuthLoading(false);
+        // Ignore signOut cleanup errors; user remains unauthorized in UI and Firestore rules
       }
     });
     return () => unsub();
@@ -103,8 +108,17 @@ export function AdminDashboard({
 
   const handleGoogleSignIn = async () => {
     setAuthError(null);
+    setRejectedEmail(null);
     try {
-      await signInWithPopup(auth, googleProvider);
+      const credential = await signInWithPopup(auth, googleProvider);
+      if (!isAuthorizedOwnerAccount(credential.user)) {
+        const attemptedEmail = credential.user.email ?? 'Unknown account';
+        setRejectedEmail(attemptedEmail);
+        setIsAuthorized(false);
+        setUser(null);
+        setMessages([]);
+        await signOut(auth);
+      }
     } catch (err) {
       setAuthError(err instanceof Error ? err.message : 'Sign-in failed.');
     }
@@ -114,6 +128,7 @@ export function AdminDashboard({
     await signOut(auth);
     setMessages([]);
     setIsAuthorized(false);
+    setRejectedEmail(null);
   };
 
   const handleSeedDefaults = async () => {
@@ -148,21 +163,52 @@ export function AdminDashboard({
             </button>
           </div>
 
-          <div className="w-12 h-12 rounded-2xl bg-[#741BFF]/20 border border-[#C8C8D8]/25 flex items-center justify-center text-[#00D9FF] mb-5">
-            <ShieldCheck className="w-6 h-6" aria-hidden="true" />
+          <div
+            className={`w-12 h-12 rounded-2xl border flex items-center justify-center mb-5 ${
+              rejectedEmail
+                ? 'bg-rose-500/15 border-rose-400/35 text-rose-300'
+                : 'bg-[#741BFF]/20 border-[#C8C8D8]/25 text-[#00D9FF]'
+            }`}
+          >
+            {rejectedEmail ? (
+              <ShieldAlert className="w-6 h-6" aria-hidden="true" />
+            ) : (
+              <ShieldCheck className="w-6 h-6" aria-hidden="true" />
+            )}
           </div>
 
           <h1 className="font-display text-2xl font-bold text-white">
-            {user && !isAuthorized && !authLoading ? t.admin.unauthorizedTitle : t.admin.title}
+            {rejectedEmail ? t.admin.unauthorizedTitle : t.admin.title}
           </h1>
 
           <p className="mt-2.5 text-sm text-[#C8C8D8] leading-relaxed">
             {authLoading
               ? 'Verifying authorization...'
-              : user && !isAuthorized
+              : rejectedEmail
               ? t.admin.unauthorizedDesc
               : t.admin.ownerOnlyNotice}
           </p>
+
+          <div
+            data-testid="admin-owner-lock-notice"
+            className="mt-4 px-3.5 py-2.5 rounded-xl bg-white/[0.04] border border-[#C8C8D8]/16 text-xs text-[#C8C8D8] flex items-center justify-between gap-2"
+          >
+            <span>{t.admin.allowedAccountLabel}</span>
+            <span className="font-mono-tabular font-semibold text-[#00D9FF] truncate">
+              {OWNER_EMAIL}
+            </span>
+          </div>
+
+          {rejectedEmail && (
+            <div
+              role="alert"
+              data-testid="admin-rejected-alert"
+              className="mt-4 p-3 rounded-xl bg-rose-500/10 border border-rose-400/30 text-xs text-rose-200 leading-relaxed"
+            >
+              {t.admin.rejectedAccountPrefix}{' '}
+              <span className="font-mono-tabular font-semibold text-white">{rejectedEmail}</span>
+            </div>
+          )}
 
           {authError && (
             <div role="alert" className="mt-4 p-3 rounded-xl bg-rose-500/10 border border-rose-400/30 text-xs text-rose-200">
@@ -171,7 +217,7 @@ export function AdminDashboard({
           )}
 
           <div className="mt-6 space-y-3">
-            {!authLoading && !user && (
+            {!authLoading && (
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
@@ -179,21 +225,6 @@ export function AdminDashboard({
               >
                 {t.admin.signInWithGoogle}
               </button>
-            )}
-
-            {!authLoading && user && !isAuthorized && (
-              <div className="space-y-3">
-                <p className="text-xs text-[#C8C8D8]/80 font-mono-tabular">
-                  Signed in as: {user.email}
-                </p>
-                <button
-                  type="button"
-                  onClick={handleSignOut}
-                  className="btn-chrome w-full py-3 px-5 rounded-xl text-sm font-semibold text-white"
-                >
-                  {t.admin.signOut}
-                </button>
-              </div>
             )}
           </div>
         </div>

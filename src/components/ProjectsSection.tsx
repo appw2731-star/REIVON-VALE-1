@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
-import { ExternalLink, Github, ArrowUpRight, X } from 'lucide-react';
+import { ExternalLink, Github, X } from 'lucide-react';
 import { SafeImage } from './SafeImage';
-import { TiltCard } from './MagneticWrapper';
 import { TechStackBadges } from './TechStackBadges';
+import { ProjectCard } from './ProjectCard';
 import { ProjectActivityWidget } from './ProjectActivityWidget';
 import { filterProjectsByCategory, isSafeHttpUrl } from '../utils/validators';
 import { resolveProjectTechStack } from '../utils/techStack';
@@ -122,145 +121,17 @@ export function ProjectsSection({
                   : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7'
             }
           >
-            {visibleProjects.map((project, idx) => {
-              const title = lang === 'bn' ? project.titleBn : project.titleEn;
-              const desc = lang === 'bn' ? project.descriptionBn : project.descriptionEn;
-              const hasLive = Boolean(project.liveDemoUrl.trim() && isSafeHttpUrl(project.liveDemoUrl));
-              const hasGithub = Boolean(project.githubUrl.trim() && isSafeHttpUrl(project.githubUrl));
-              const isSpotlight = visibleProjects.length === 1;
-
-              return (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{ duration: 0.45, delay: idx * 0.06, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <TiltCard
-                    glowColor="rgba(0, 217, 255, 0.22)"
-                    maxTilt={isSpotlight ? 3.5 : 6}
-                    className="rounded-3xl h-full"
-                  >
-                    <article
-                      className={`group glass-chrome rounded-3xl overflow-hidden h-full ${
-                        isSpotlight ? 'grid grid-cols-1 lg:grid-cols-12' : 'flex flex-col'
-                      }`}
-                    >
-                      <div
-                        className={`relative bg-[#0B0B17] overflow-hidden ${
-                          isSpotlight
-                            ? 'lg:col-span-7 aspect-[16/10] lg:aspect-auto lg:min-h-[380px] border-b lg:border-b-0 lg:border-r border-[#C8C8D8]/12'
-                            : 'aspect-[16/11] border-b border-[#C8C8D8]/12'
-                        }`}
-                      >
-                        <SafeImage
-                          src={project.thumbnailUrl}
-                          alt={title}
-                          fallbackTitle={title}
-                          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div
-                          aria-hidden="true"
-                          className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#0B0B17]/80 to-transparent"
-                        />
-                      </div>
-
-                      <div
-                        className={`p-6 sm:p-8 flex flex-col flex-1 ${
-                          isSpotlight ? 'lg:col-span-5 justify-center' : ''
-                        }`}
-                      >
-                        {/* Unboxed clean metadata row */}
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#C8C8D8]/75 mb-3">
-                          <span className="text-[#00D9FF] font-semibold">
-                            {t.projects.categories[project.category]}
-                          </span>
-                          <span aria-hidden="true">·</span>
-                          <span>{t.projects.statuses[project.status]}</span>
-                          {project.featured && (
-                            <>
-                              <span aria-hidden="true">·</span>
-                              <span className="text-[#B68DFF] font-semibold">
-                                {t.projects.featuredLabel}
-                              </span>
-                            </>
-                          )}
-                          {project.isPlaceholder && (
-                            <>
-                              <span aria-hidden="true">·</span>
-                              <span className="text-[#C8C8D8]/55">
-                                {t.projects.placeholderLabel}
-                              </span>
-                            </>
-                          )}
-                        </div>
-
-                        <h3
-                          className={`font-display font-bold text-white leading-snug ${
-                            isSpotlight ? 'text-2xl sm:text-3xl text-chrome' : 'text-xl'
-                          }`}
-                        >
-                          {title}
-                        </h3>
-
-                        <p
-                          className={`mt-3 text-sm sm:text-base text-[#C8C8D8] leading-relaxed ${
-                            isSpotlight ? '' : 'line-clamp-3 flex-1'
-                          }`}
-                        >
-                          {desc}
-                        </p>
-
-                        <TechStackBadges
-                          badges={resolveProjectTechStack(project)}
-                          heading={t.projects.techStackLabel}
-                          lang={lang}
-                          variant="card"
-                        />
-
-                        <div className="mt-6 flex flex-wrap items-center gap-3">
-                          {hasLive && (
-                            <a
-                              href={project.liveDemoUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="btn-electric inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white whitespace-nowrap shrink-0"
-                            >
-                              <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
-                              <span>{t.projects.liveDemo}</span>
-                            </a>
-                          )}
-
-                          <button
-                            type="button"
-                            onClick={() => setActiveProject(project)}
-                            className={`${
-                              hasLive ? 'btn-chrome text-[#C8C8D8] hover:text-white' : 'btn-electric text-white'
-                            } inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D9FF]`}
-                          >
-                            <span>{t.projects.viewDetails}</span>
-                            <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
-                          </button>
-
-                          {hasGithub && (
-                            <a
-                              href={project.githubUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="btn-chrome inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-[#C8C8D8] hover:text-white whitespace-nowrap shrink-0"
-                            >
-                              <Github className="w-3.5 h-3.5" aria-hidden="true" />
-                              <span>{t.projects.github}</span>
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </article>
-                  </TiltCard>
-                </motion.div>
-              );
-            })}
+            {visibleProjects.map((project, idx) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={idx}
+                isSpotlight={visibleProjects.length === 1}
+                lang={lang}
+                t={t}
+                onSelectProject={setActiveProject}
+              />
+            ))}
           </div>
         )}
 
