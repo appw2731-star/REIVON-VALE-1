@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#080810"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="url(#chromeRim)" stroke-width="2" stroke-opacity="0.85"/>
+  <path d="M15 45V19H29.2C34.5 19 37.8 22.1 37.8 26.8C37.8 30.6 35.6 33.4 31.8 34.3L39.2 45H32.8L26.2 35.1H20.8V45H15ZM20.8 30.4H28.4C30.9 30.4 32.3 29.1 32.3 26.9C32.3 24.7 30.9 23.5 28.4 23.5H20.8V30.4Z" fill="url(#silverMetal)"/>
+  <path d="M39.8 19H46.2L50.8 35.4L47.5 45H42.9L39.8 19Z" fill="url(#electricBeam)"/>
+  <defs>
+    <linearGradient id="chromeRim" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00D9FF"/>
+      <stop offset="0.5" stop-color="#C8C8D8"/>
+      <stop offset="1" stop-color="#741BFF"/>
+    </linearGradient>
+    <linearGradient id="silverMetal" x1="15" y1="19" x2="39" y2="45" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="0.55" stop-color="#C8C8D8"/>
+      <stop offset="1" stop-color="#8B8BA8"/>
+    </linearGradient>
+    <linearGradient id="electricBeam" x1="40" y1="19" x2="51" y2="45" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00D9FF"/>
+      <stop offset="1" stop-color="#741BFF"/>
+    </linearGradient>
+  </defs>
+</svg>

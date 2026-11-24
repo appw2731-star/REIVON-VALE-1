@@ -1,0 +1,313 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 1: Global Default-Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Hardened Primitives
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isVerifiedUser() && (
+        request.auth.token.email == 'webrokib@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidStringList(arr, maxLen) {
+      return arr is list && arr.size() <= maxLen && (arr.size() == 0 || (arr[0] is string && arr[0].size() <= 80));
+    }
+
+    // Validation Blueprints (Anti-Update-Gap)
+    function isValidProfile(data) {
+      return data.keys().hasAll([
+          'fullName', 'fullNameBn', 'profileImageUrl', 'taglineEn', 'taglineBn',
+          'introEn', 'introBn', 'bioEn', 'bioBn', 'locationEn', 'locationBn',
+          'institutionEn', 'institutionBn', 'academicYearEn', 'academicYearBn',
+          'currentSemesterEn', 'currentSemesterBn',
+          'departmentEn', 'departmentBn',
+          'interestsEn', 'interestsBn', 'goalsEn', 'goalsBn', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'fullName', 'fullNameBn', 'profileImageUrl', 'taglineEn', 'taglineBn',
+          'introEn', 'introBn', 'bioEn', 'bioBn', 'locationEn', 'locationBn',
+          'institutionEn', 'institutionBn', 'academicYearEn', 'academicYearBn',
+          'currentSemesterEn', 'currentSemesterBn',
+          'departmentEn', 'departmentBn',
+          'interestsEn', 'interestsBn', 'goalsEn', 'goalsBn', 'updatedAt'
+        ])
+        && data.fullName is string && data.fullName.size() >= 1 && data.fullName.size() <= 120
+        && data.fullNameBn is string && data.fullNameBn.size() >= 1 && data.fullNameBn.size() <= 120
+        && data.profileImageUrl is string && data.profileImageUrl.size() <= 900000
+        && data.taglineEn is string && data.taglineEn.size() >= 1 && data.taglineEn.size() <= 180
+        && data.taglineBn is string && data.taglineBn.size() >= 1 && data.taglineBn.size() <= 180
+        && data.introEn is string && data.introEn.size() >= 1 && data.introEn.size() <= 800
+        && data.introBn is string && data.introBn.size() >= 1 && data.introBn.size() <= 800
+        && data.bioEn is string && data.bioEn.size() >= 1 && data.bioEn.size() <= 2400
+        && data.bioBn is string && data.bioBn.size() >= 1 && data.bioBn.size() <= 2400
+        && data.locationEn is string && data.locationEn.size() <= 120
+        && data.locationBn is string && data.locationBn.size() <= 120
+        && data.institutionEn is string && data.institutionEn.size() <= 160
+        && data.institutionBn is string && data.institutionBn.size() <= 160
+        && data.academicYearEn is string && data.academicYearEn.size() <= 100
+        && data.academicYearBn is string && data.academicYearBn.size() <= 100
+        && data.currentSemesterEn is string && data.currentSemesterEn.size() <= 100
+        && data.currentSemesterBn is string && data.currentSemesterBn.size() <= 100
+        && data.departmentEn is string && data.departmentEn.size() <= 100
+        && data.departmentBn is string && data.departmentBn.size() <= 100
+        && isValidStringList(data.interestsEn, 12)
+        && isValidStringList(data.interestsBn, 12)
+        && data.goalsEn is string && data.goalsEn.size() <= 1200
+        && data.goalsBn is string && data.goalsBn.size() <= 1200
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSkill(data) {
+      return data.keys().hasAll([
+          'titleEn', 'titleBn', 'descriptionEn', 'descriptionBn',
+          'iconKey', 'focusAreasEn', 'sortOrder', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'titleEn', 'titleBn', 'descriptionEn', 'descriptionBn',
+          'iconKey', 'focusAreasEn', 'sortOrder', 'updatedAt'
+        ])
+        && data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 100
+        && data.titleBn is string && data.titleBn.size() >= 1 && data.titleBn.size() <= 100
+        && data.descriptionEn is string && data.descriptionEn.size() >= 1 && data.descriptionEn.size() <= 500
+        && data.descriptionBn is string && data.descriptionBn.size() >= 1 && data.descriptionBn.size() <= 500
+        && data.iconKey in ['code', 'smartphone', 'layout', 'cpu', 'palette', 'globe', 'layers', 'shield']
+        && isValidStringList(data.focusAreasEn, 6)
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 1000
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidProject(data) {
+      return data.keys().hasAll([
+          'titleEn', 'titleBn', 'thumbnailUrl', 'descriptionEn', 'descriptionBn',
+          'category', 'technologies', 'liveDemoUrl', 'githubUrl', 'status',
+          'featured', 'isPlaceholder', 'sortOrder', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'titleEn', 'titleBn', 'thumbnailUrl', 'descriptionEn', 'descriptionBn',
+          'category', 'technologies', 'liveDemoUrl', 'githubUrl', 'status',
+          'featured', 'isPlaceholder', 'sortOrder', 'createdAt', 'updatedAt'
+        ])
+        && data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 140
+        && data.titleBn is string && data.titleBn.size() >= 1 && data.titleBn.size() <= 140
+        && data.thumbnailUrl is string && data.thumbnailUrl.size() <= 900000
+        && data.descriptionEn is string && data.descriptionEn.size() >= 1 && data.descriptionEn.size() <= 1500
+        && data.descriptionBn is string && data.descriptionBn.size() >= 1 && data.descriptionBn.size() <= 1500
+        && data.category in ['websites', 'android', 'ai', 'uiux', 'other']
+        && isValidStringList(data.technologies, 12)
+        && data.liveDemoUrl is string && data.liveDemoUrl.size() <= 500
+        && data.githubUrl is string && data.githubUrl.size() <= 500
+        && data.status in ['live', 'in_progress', 'concept', 'archived']
+        && data.featured is bool
+        && data.isPlaceholder is bool
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 1000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidGalleryItem(data) {
+      return data.keys().hasAll([
+          'titleEn', 'titleBn', 'captionEn', 'captionBn', 'imageUrl',
+          'category', 'isPlaceholder', 'sortOrder', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'titleEn', 'titleBn', 'captionEn', 'captionBn', 'imageUrl',
+          'category', 'isPlaceholder', 'sortOrder', 'createdAt', 'updatedAt'
+        ])
+        && data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 120
+        && data.titleBn is string && data.titleBn.size() >= 1 && data.titleBn.size() <= 120
+        && data.captionEn is string && data.captionEn.size() <= 400
+        && data.captionBn is string && data.captionBn.size() <= 400
+        && data.imageUrl is string && data.imageUrl.size() >= 1 && data.imageUrl.size() <= 900000
+        && data.category in ['design', 'development', '3d', 'photography', 'other']
+        && data.isPlaceholder is bool
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 1000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSocialLink(data) {
+      return data.keys().hasAll(['platform', 'label', 'url', 'visible', 'sortOrder', 'updatedAt'])
+        && data.keys().hasOnly(['platform', 'label', 'url', 'visible', 'sortOrder', 'updatedAt'])
+        && data.platform in ['facebook', 'instagram', 'tiktok', 'telegram', 'github', 'linkedin', 'youtube', 'x', 'custom']
+        && data.label is string && data.label.size() >= 1 && data.label.size() <= 60
+        && data.url is string && data.url.size() >= 8 && data.url.size() <= 500 && data.url.matches('^https://.+')
+        && data.visible is bool
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 100
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidContactMessage(data) {
+      return data.keys().hasAll(['name', 'email', 'subject', 'message', 'status', 'createdAt'])
+        && data.keys().hasOnly(['name', 'email', 'subject', 'message', 'status', 'createdAt'])
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 100
+        && data.email is string && data.email.size() >= 5 && data.email.size() <= 160
+        && data.email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$')
+        && data.subject is string && data.subject.size() >= 2 && data.subject.size() <= 180
+        && data.message is string && data.message.size() >= 10 && data.message.size() <= 3000
+        && data.status in ['unread', 'read', 'replied']
+        && data.createdAt is timestamp;
+    }
+
+    function isValidSiteSettings(data) {
+      return data.keys().hasAll([
+          'brandName', 'logoText', 'logoImageUrl', 'productionUrl',
+          'seoTitle', 'seoDescription', 'seoKeywords', 'ogImageUrl',
+          'footerNoteEn', 'footerNoteBn', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'brandName', 'logoText', 'logoImageUrl', 'productionUrl',
+          'seoTitle', 'seoDescription', 'seoKeywords', 'ogImageUrl',
+          'footerNoteEn', 'footerNoteBn', 'updatedAt'
+        ])
+        && data.brandName is string && data.brandName.size() >= 1 && data.brandName.size() <= 80
+        && data.logoText is string && data.logoText.size() >= 1 && data.logoText.size() <= 40
+        && data.logoImageUrl is string && data.logoImageUrl.size() <= 900000
+        && data.productionUrl is string && data.productionUrl.size() <= 300
+        && data.seoTitle is string && data.seoTitle.size() >= 1 && data.seoTitle.size() <= 120
+        && data.seoDescription is string && data.seoDescription.size() >= 1 && data.seoDescription.size() <= 320
+        && data.seoKeywords is string && data.seoKeywords.size() <= 300
+        && data.ogImageUrl is string && data.ogImageUrl.size() <= 900000
+        && data.footerNoteEn is string && data.footerNoteEn.size() <= 240
+        && data.footerNoteBn is string && data.footerNoteBn.size() <= 240
+        && data.updatedAt is timestamp;
+    }
+
+    // Admin Allowlist — Public & Client Writes Strictly Forbidden
+    match /admins/{uid} {
+      allow get: if isSignedIn() && isValidId(uid) && request.auth.uid == uid;
+      allow list, create, update, delete: if false;
+    }
+
+    // Connection Probe Document (Read-Only for Startup Connectivity Check)
+    match /test/{docId} {
+      allow get: if isValidId(docId) && docId == 'connection';
+      allow list, write: if false;
+    }
+
+    // Public Portfolio Collections (Public Read, Strict Admin-Only Write)
+    match /profiles/{profileId} {
+      allow get: if isValidId(profileId);
+      allow list: if true;
+      allow create: if isAdmin() && isValidId(profileId) && isValidProfile(incoming()) && incoming().updatedAt == request.time;
+      allow update: if isAdmin() && isValidId(profileId) && isValidProfile(incoming()) && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'fullName', 'fullNameBn', 'profileImageUrl', 'taglineEn', 'taglineBn',
+          'introEn', 'introBn', 'bioEn', 'bioBn', 'locationEn', 'locationBn',
+          'institutionEn', 'institutionBn', 'academicYearEn', 'academicYearBn',
+          'currentSemesterEn', 'currentSemesterBn',
+          'departmentEn', 'departmentBn',
+          'interestsEn', 'interestsBn', 'goalsEn', 'goalsBn', 'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(profileId);
+    }
+
+    match /skills/{skillId} {
+      allow get: if isValidId(skillId);
+      allow list: if true;
+      allow create: if isAdmin() && isValidId(skillId) && isValidSkill(incoming()) && incoming().updatedAt == request.time;
+      allow update: if isAdmin() && isValidId(skillId) && isValidSkill(incoming()) && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'titleEn', 'titleBn', 'descriptionEn', 'descriptionBn',
+          'iconKey', 'focusAreasEn', 'sortOrder', 'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(skillId);
+    }
+
+    match /projects/{projectId} {
+      allow get: if isValidId(projectId);
+      allow list: if true;
+      allow create: if isAdmin() && isValidId(projectId) && isValidProject(incoming())
+        && incoming().createdAt == request.time && incoming().updatedAt == request.time;
+      allow update: if isAdmin() && isValidId(projectId) && isValidProject(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'titleEn', 'titleBn', 'thumbnailUrl', 'descriptionEn', 'descriptionBn',
+          'category', 'technologies', 'liveDemoUrl', 'githubUrl', 'status',
+          'featured', 'isPlaceholder', 'sortOrder', 'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(projectId);
+    }
+
+    match /gallery/{itemId} {
+      allow get: if isValidId(itemId);
+      allow list: if true;
+      allow create: if isAdmin() && isValidId(itemId) && isValidGalleryItem(incoming())
+        && incoming().createdAt == request.time && incoming().updatedAt == request.time;
+      allow update: if isAdmin() && isValidId(itemId) && isValidGalleryItem(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'titleEn', 'titleBn', 'captionEn', 'captionBn', 'imageUrl',
+          'category', 'isPlaceholder', 'sortOrder', 'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(itemId);
+    }
+
+    match /social_links/{linkId} {
+      allow get: if isValidId(linkId);
+      allow list: if true;
+      allow create: if isAdmin() && isValidId(linkId) && isValidSocialLink(incoming()) && incoming().updatedAt == request.time;
+      allow update: if isAdmin() && isValidId(linkId) && isValidSocialLink(incoming()) && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'platform', 'label', 'url', 'visible', 'sortOrder', 'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(linkId);
+    }
+
+    match /site_settings/{settingId} {
+      allow get: if isValidId(settingId);
+      allow list: if true;
+      allow create: if isAdmin() && isValidId(settingId) && isValidSiteSettings(incoming()) && incoming().updatedAt == request.time;
+      allow update: if isAdmin() && isValidId(settingId) && isValidSiteSettings(incoming()) && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'brandName', 'logoText', 'logoImageUrl', 'productionUrl',
+          'seoTitle', 'seoDescription', 'seoKeywords', 'ogImageUrl',
+          'footerNoteEn', 'footerNoteBn', 'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(settingId);
+    }
+
+    // Contact Messages — Strict PII Isolation (Public Create-Only, Admin-Only Read/Manage)
+    match /contact_messages/{messageId} {
+      allow get: if isAdmin() && isValidId(messageId);
+      allow list: if isAdmin();
+      allow create: if isValidId(messageId)
+        && isValidContactMessage(incoming())
+        && incoming().status == 'unread'
+        && incoming().createdAt == request.time;
+      allow update: if isAdmin()
+        && isValidId(messageId)
+        && isValidContactMessage(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().diff(existing()).affectedKeys().hasOnly(['status']);
+      allow delete: if isAdmin() && isValidId(messageId);
+    }
+  }
+}

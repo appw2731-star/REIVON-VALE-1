@@ -1,0 +1,262 @@
+{
+  "entities": {
+    "Profile": {
+      "title": "Profile",
+      "description": "Editable owner profile and About Me fields for REIVON VALE.",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "fullNameBn": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "profileImageUrl": { "type": "string", "maxLength": 900000 },
+        "taglineEn": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "taglineBn": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "introEn": { "type": "string", "minLength": 1, "maxLength": 800 },
+        "introBn": { "type": "string", "minLength": 1, "maxLength": 800 },
+        "bioEn": { "type": "string", "minLength": 1, "maxLength": 2400 },
+        "bioBn": { "type": "string", "minLength": 1, "maxLength": 2400 },
+        "locationEn": { "type": "string", "maxLength": 120 },
+        "locationBn": { "type": "string", "maxLength": 120 },
+        "institutionEn": { "type": "string", "maxLength": 160 },
+        "institutionBn": { "type": "string", "maxLength": 160 },
+        "academicYearEn": { "type": "string", "maxLength": 100 },
+        "academicYearBn": { "type": "string", "maxLength": 100 },
+        "currentSemesterEn": { "type": "string", "maxLength": 100 },
+        "currentSemesterBn": { "type": "string", "maxLength": 100 },
+        "departmentEn": { "type": "string", "maxLength": 100 },
+        "departmentBn": { "type": "string", "maxLength": 100 },
+        "interestsEn": { "type": "array", "description": "Up to 12 interest labels in English" },
+        "interestsBn": { "type": "array", "description": "Up to 12 interest labels in Bangla" },
+        "goalsEn": { "type": "string", "maxLength": 1200 },
+        "goalsBn": { "type": "string", "maxLength": 1200 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "fullName",
+        "fullNameBn",
+        "profileImageUrl",
+        "taglineEn",
+        "taglineBn",
+        "introEn",
+        "introBn",
+        "bioEn",
+        "bioBn",
+        "locationEn",
+        "locationBn",
+        "institutionEn",
+        "institutionBn",
+        "academicYearEn",
+        "academicYearBn",
+        "currentSemesterEn",
+        "currentSemesterBn",
+        "departmentEn",
+        "departmentBn",
+        "interestsEn",
+        "interestsBn",
+        "goalsEn",
+        "goalsBn",
+        "updatedAt"
+      ]
+    },
+    "Skill": {
+      "title": "Skill",
+      "description": "Domain skill card managed from the admin dashboard without fake percentages.",
+      "type": "object",
+      "properties": {
+        "titleEn": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "titleBn": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "descriptionEn": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "descriptionBn": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "iconKey": {
+          "type": "string",
+          "enum": ["code", "smartphone", "layout", "cpu", "palette", "globe", "layers", "shield"]
+        },
+        "focusAreasEn": { "type": "array", "description": "Up to 6 focus area keywords" },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "titleEn",
+        "titleBn",
+        "descriptionEn",
+        "descriptionBn",
+        "iconKey",
+        "focusAreasEn",
+        "sortOrder",
+        "updatedAt"
+      ]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Portfolio project showcase item.",
+      "type": "object",
+      "properties": {
+        "titleEn": { "type": "string", "minLength": 1, "maxLength": 140 },
+        "titleBn": { "type": "string", "minLength": 1, "maxLength": 140 },
+        "thumbnailUrl": { "type": "string", "maxLength": 900000 },
+        "descriptionEn": { "type": "string", "minLength": 1, "maxLength": 1500 },
+        "descriptionBn": { "type": "string", "minLength": 1, "maxLength": 1500 },
+        "category": {
+          "type": "string",
+          "enum": ["websites", "android", "ai", "uiux", "other"]
+        },
+        "technologies": { "type": "array", "description": "Up to 12 technology names" },
+        "liveDemoUrl": { "type": "string", "maxLength": 500 },
+        "githubUrl": { "type": "string", "maxLength": 500 },
+        "status": {
+          "type": "string",
+          "enum": ["live", "in_progress", "concept", "archived"]
+        },
+        "featured": { "type": "boolean" },
+        "isPlaceholder": { "type": "boolean" },
+        "sortOrder": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "titleEn",
+        "titleBn",
+        "thumbnailUrl",
+        "descriptionEn",
+        "descriptionBn",
+        "category",
+        "technologies",
+        "liveDemoUrl",
+        "githubUrl",
+        "status",
+        "featured",
+        "isPlaceholder",
+        "sortOrder",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "GalleryItem": {
+      "title": "GalleryItem",
+      "description": "Visual gallery image item with category and caption.",
+      "type": "object",
+      "properties": {
+        "titleEn": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "titleBn": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "captionEn": { "type": "string", "maxLength": 400 },
+        "captionBn": { "type": "string", "maxLength": 400 },
+        "imageUrl": { "type": "string", "minLength": 1, "maxLength": 900000 },
+        "category": {
+          "type": "string",
+          "enum": ["design", "development", "3d", "photography", "other"]
+        },
+        "isPlaceholder": { "type": "boolean" },
+        "sortOrder": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "titleEn",
+        "titleBn",
+        "captionEn",
+        "captionBn",
+        "imageUrl",
+        "category",
+        "isPlaceholder",
+        "sortOrder",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SocialLink": {
+      "title": "SocialLink",
+      "description": "Editable social media profile link.",
+      "type": "object",
+      "properties": {
+        "platform": {
+          "type": "string",
+          "enum": ["facebook", "instagram", "tiktok", "telegram", "github", "linkedin", "youtube", "x", "custom"]
+        },
+        "label": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "url": { "type": "string", "minLength": 8, "maxLength": 500, "pattern": "^https://.+" },
+        "visible": { "type": "boolean" },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["platform", "label", "url", "visible", "sortOrder", "updatedAt"]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "Visitor contact form submission — PII isolated to admin read/manage only.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "email": { "type": "string", "minLength": 5, "maxLength": 160, "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$" },
+        "subject": { "type": "string", "minLength": 2, "maxLength": 180 },
+        "message": { "type": "string", "minLength": 10, "maxLength": 3000 },
+        "status": { "type": "string", "enum": ["unread", "read", "replied"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "subject", "message", "status", "createdAt"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Global site brand, logo, dynamic QR production URL, and SEO settings.",
+      "type": "object",
+      "properties": {
+        "brandName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "logoText": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "logoImageUrl": { "type": "string", "maxLength": 900000 },
+        "productionUrl": { "type": "string", "maxLength": 300 },
+        "seoTitle": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "seoDescription": { "type": "string", "minLength": 1, "maxLength": 320 },
+        "seoKeywords": { "type": "string", "maxLength": 300 },
+        "ogImageUrl": { "type": "string", "maxLength": 900000 },
+        "footerNoteEn": { "type": "string", "maxLength": 240 },
+        "footerNoteBn": { "type": "string", "maxLength": 240 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "brandName",
+        "logoText",
+        "logoImageUrl",
+        "productionUrl",
+        "seoTitle",
+        "seoDescription",
+        "seoKeywords",
+        "ogImageUrl",
+        "footerNoteEn",
+        "footerNoteBn",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/profiles/{profileId}": {
+      "schema": { "$ref": "#/entities/Profile" },
+      "description": "Publicly readable, admin-only writable profile document (main)."
+    },
+    "/skills/{skillId}": {
+      "schema": { "$ref": "#/entities/Skill" },
+      "description": "Publicly readable, admin-only writable skill cards."
+    },
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Publicly readable, admin-only writable portfolio projects."
+    },
+    "/gallery/{itemId}": {
+      "schema": { "$ref": "#/entities/GalleryItem" },
+      "description": "Publicly readable, admin-only writable visual gallery items."
+    },
+    "/social_links/{linkId}": {
+      "schema": { "$ref": "#/entities/SocialLink" },
+      "description": "Publicly readable, admin-only writable social links."
+    },
+    "/contact_messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ContactMessage" },
+      "description": "Public create-only contact inbox; admin-only read, update, and delete."
+    },
+    "/site_settings/{settingId}": {
+      "schema": { "$ref": "#/entities/SiteSettings" },
+      "description": "Publicly readable, admin-only writable website and SEO settings (main)."
+    },
+    "/admins/{uid}": {
+      "schema": "Admin",
+      "description": "Server-managed admin allowlist (client writes strictly denied)."
+    }
+  }
+}

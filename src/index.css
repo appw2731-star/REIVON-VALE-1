@@ -1,0 +1,238 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Outfit", "Noto Sans Bengali", system-ui, sans-serif;
+  --font-sans: "DM Sans", "Noto Sans Bengali", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --rv-bg: #080810;
+    --rv-purple: #741bff;
+    --rv-cyan: #00d9ff;
+    --rv-chrome: #c8c8d8;
+    --rv-white: #ffffff;
+  }
+
+  html {
+    background-color: #080810;
+    color: #ffffff;
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  body {
+    background-color: #080810;
+    letter-spacing: 0.01em;
+    overflow-x: hidden;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono-tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Liquid Silver Chrome Typography */
+.text-chrome {
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #e5e5f2 34%,
+    #c8c8d8 58%,
+    #8889a6 82%,
+    #dfe6ff 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Sculpted 3D Metallic Hero Wordmark */
+.hero-3d-title {
+  background: linear-gradient(
+    165deg,
+    #ffffff 0%,
+    #eef6ff 28%,
+    #c8c8d8 54%,
+    #9fa3c4 74%,
+    #00d9ff 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 rgba(116, 27, 255, 0.45))
+    drop-shadow(0 6px 24px rgba(0, 217, 255, 0.22));
+}
+
+/* Luxury Obsidian & Chrome Glass Surface (never uses backdrop-blur over WebGL) */
+.glass-panel {
+  background: linear-gradient(
+    155deg,
+    rgba(20, 20, 38, 0.84) 0%,
+    rgba(11, 11, 22, 0.94) 100%
+  );
+  border: 1px solid rgba(200, 200, 216, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.glass-panel-hover {
+  transition: border-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(0, 217, 255, 0.38);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 18px 46px -18px rgba(116, 27, 255, 0.42);
+  transform: translateY(-3px);
+}
+
+/* Chrome-Bezel Metallic Panel */
+.glass-chrome {
+  background: linear-gradient(
+    145deg,
+    rgba(28, 26, 52, 0.78) 0%,
+    rgba(10, 10, 20, 0.94) 60%,
+    rgba(16, 14, 34, 0.88) 100%
+  );
+  border: 1px solid rgba(200, 200, 216, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 24px 60px -28px rgba(0, 0, 0, 0.85);
+}
+
+/* Primary Electric Purple -> Neon Blue CTA */
+.btn-electric {
+  background: linear-gradient(135deg, #741bff 0%, #3b5bff 52%, #00d9ff 100%);
+  box-shadow: 0 0 0 1px rgba(200, 200, 216, 0.25),
+    0 12px 32px -10px rgba(116, 27, 255, 0.75);
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-electric:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 0 1px rgba(0, 217, 255, 0.55),
+    0 16px 38px -8px rgba(0, 217, 255, 0.48);
+  transform: translateY(-1px);
+}
+
+.btn-electric:active {
+  transform: translateY(0);
+}
+
+/* Secondary Silver Chrome Outline Button */
+.btn-chrome {
+  background: linear-gradient(160deg, rgba(24, 24, 44, 0.92), rgba(11, 11, 22, 0.94));
+  border: 1px solid rgba(200, 200, 216, 0.24);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: border-color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-chrome:hover {
+  border-color: rgba(0, 217, 255, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 10px 28px -12px rgba(0, 217, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Subtle Metallic Hairline Divider */
+.chrome-divider {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(116, 27, 255, 0.4) 22%,
+    rgba(200, 200, 216, 0.35) 50%,
+    rgba(0, 217, 255, 0.4) 78%,
+    transparent 100%
+  );
+}
+
+@keyframes chromeSweep {
+  0% {
+    transform: translateX(-140%) skewX(-24deg);
+  }
+  100% {
+    transform: translateX(260%) skewX(-24deg);
+  }
+}
+
+.animate-chrome-sweep {
+  animation: chromeSweep 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes semesterGlowPulse {
+  0%, 100% {
+    opacity: 0.48;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.92;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes semesterBorderShimmer {
+  0%, 100% {
+    box-shadow: 0 0 14px -4px rgba(0, 217, 255, 0.42),
+      0 0 28px -8px rgba(116, 27, 255, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+  50% {
+    box-shadow: 0 0 22px -2px rgba(0, 217, 255, 0.68),
+      0 0 40px -6px rgba(116, 27, 255, 0.58),
+      inset 0 1px 0 rgba(0, 217, 255, 0.28);
+  }
+}
+
+.semester-glow-aura {
+  animation: semesterGlowPulse 2.8s ease-in-out infinite;
+}
+
+.semester-glow-badge {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 217, 255, 0.14) 0%,
+    rgba(13, 17, 42, 0.94) 50%,
+    rgba(116, 27, 255, 0.18) 100%
+  );
+  border: 1px solid rgba(0, 217, 255, 0.44);
+  animation: semesterBorderShimmer 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .glass-panel-hover,
+  .btn-electric,
+  .btn-chrome {
+    transition: none;
+  }
+  .glass-panel-hover:hover,
+  .btn-electric:hover,
+  .btn-chrome:hover {
+    transform: none;
+  }
+  .animate-chrome-sweep,
+  .semester-glow-aura,
+  .semester-glow-badge {
+    animation: none;
+  }
+}
