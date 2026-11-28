@@ -183,3 +183,44 @@ export function extractSocialHandle(url: string, fallbackLabel: string): string 
   }
 }
 
+function normalizeProjectUrl(url: string): string {
+  return url.trim().toLowerCase().replace(/\/+$/, '');
+}
+
+/**
+ * Merges Firestore project documents with newly added default portfolio projects.
+ * Remote documents always win by id or normalized liveDemoUrl so admin edits are preserved
+ * and no duplicate project cards are ever created.
+ */
+export function mergeProjectsWithDefaults(
+  remoteProjects: ProjectItem[],
+  defaultProjects: ProjectItem[],
+): ProjectItem[] {
+  if (remoteProjects.length === 0) {
+    return [...defaultProjects].sort((a, b) => a.sortOrder - b.sortOrder);
+  }
+
+  const merged: ProjectItem[] = [...remoteProjects];
+  const seenIds = new Set(remoteProjects.map((project) => project.id));
+  const seenUrls = new Set(
+    remoteProjects
+      .map((project) => normalizeProjectUrl(project.liveDemoUrl))
+      .filter((url) => url.length > 0),
+  );
+
+  for (const fallback of defaultProjects) {
+    if (seenIds.has(fallback.id)) continue;
+    const normalizedUrl = normalizeProjectUrl(fallback.liveDemoUrl);
+    if (normalizedUrl && seenUrls.has(normalizedUrl)) continue;
+
+    merged.push(fallback);
+    seenIds.add(fallback.id);
+    if (normalizedUrl) {
+      seenUrls.add(normalizedUrl);
+    }
+  }
+
+  return merged.sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+

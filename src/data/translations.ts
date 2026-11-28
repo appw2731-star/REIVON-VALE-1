@@ -70,6 +70,10 @@ export interface TranslationDictionary {
     closeDetails: string;
     technologiesLabel: string;
     techStackLabel: string;
+    filteringByTech: string;
+    clearTechFilter: string;
+    showMoreTech: string;
+    showLessTech: string;
     briefSummaryLabel: string;
     hoverHint: string;
     toggleSummary: string;
@@ -265,6 +269,10 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       closeDetails: 'Close project details',
       technologiesLabel: 'Technologies',
       techStackLabel: 'Tech Stack',
+      filteringByTech: 'Filtered by tech:',
+      clearTechFilter: 'Clear filter',
+      showMoreTech: 'more',
+      showLessTech: 'Less',
       briefSummaryLabel: 'Brief Overview',
       hoverHint: 'Hover for overview',
       toggleSummary: 'Toggle brief overview',
@@ -475,6 +483,10 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       closeDetails: 'বিস্তারিত বন্ধ করুন',
       technologiesLabel: 'ব্যবহৃত প্রযুক্তি',
       techStackLabel: 'টেক স্ট্যাক',
+      filteringByTech: 'প্রযুক্তি ফিল্টার:',
+      clearTechFilter: 'ফিল্টার মুছুন',
+      showMoreTech: 'আরও',
+      showLessTech: 'কম দেখুন',
       briefSummaryLabel: 'সংক্ষিপ্ত বিবরণ',
       hoverHint: 'বিবরণ দেখতে হোভার করুন',
       toggleSummary: 'সংক্ষিপ্ত বিবরণ দেখুন',

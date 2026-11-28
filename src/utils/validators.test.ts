@@ -12,6 +12,7 @@ import {
   checkSpamCooldown,
   computeRealPortfolioStats,
   extractSocialHandle,
+  mergeProjectsWithDefaults,
 } from './validators';
 import type { ProjectItem, GalleryItem } from '../types/portfolio';
 
@@ -213,4 +214,64 @@ test('extractSocialHandle extracts clean official handles from REIVON VALE socia
     '@reivonvale'
   );
 });
+
+test('mergeProjectsWithDefaults appends newly added defaults while preserving remote edits and preventing duplicates', () => {
+  const polytechnicRemote: ProjectItem = {
+    id: 'proj-polytechnic-hub',
+    titleEn: 'Polytechnic Hub (Custom Edited)',
+    titleBn: 'পলিটেকনিক হাব',
+    thumbnailUrl: '/images/project-polytechnic-hub.png',
+    descriptionEn: 'Edited in Admin',
+    descriptionBn: 'এডমিন থেকে আপডেট',
+    category: 'websites',
+    technologies: ['React', 'Vercel'],
+    liveDemoUrl: 'https://polytechnic-hub-alpha.vercel.app/',
+    githubUrl: '',
+    status: 'live',
+    featured: true,
+    isPlaceholder: false,
+    sortOrder: 1,
+  };
+
+  const defaults: ProjectItem[] = [
+    {
+      ...polytechnicRemote,
+      titleEn: 'Polytechnic Hub — Default Title',
+    },
+    {
+      id: 'proj-glow-gift-bd',
+      titleEn: 'Glow & Gift BD',
+      titleBn: 'Glow & Gift BD',
+      thumbnailUrl: '/images/project-glow-gift-bd.png',
+      descriptionEn: 'E-commerce storefront',
+      descriptionBn: 'ই-কমার্স ওয়েবসাইট',
+      category: 'websites',
+      technologies: ['E-Commerce', 'Vercel'],
+      liveDemoUrl: 'https://glow-gift-bd.vercel.app/',
+      githubUrl: '',
+      status: 'live',
+      featured: true,
+      isPlaceholder: false,
+      sortOrder: 2,
+    },
+  ];
+
+  // Appends missing Glow & Gift BD and preserves remote edit on Polytechnic Hub
+  const merged = mergeProjectsWithDefaults([polytechnicRemote], defaults);
+  assert.equal(merged.length, 2);
+  assert.equal(merged[0].id, 'proj-polytechnic-hub');
+  assert.equal(merged[0].titleEn, 'Polytechnic Hub (Custom Edited)');
+  assert.equal(merged[1].id, 'proj-glow-gift-bd');
+
+  // Prevents duplicate when remote already added same URL under a custom id without trailing slash
+  const customGlowRemote: ProjectItem = {
+    ...defaults[1],
+    id: 'proj-custom-glow',
+    liveDemoUrl: 'https://GLOW-GIFT-BD.vercel.app',
+  };
+  const deduped = mergeProjectsWithDefaults([polytechnicRemote, customGlowRemote], defaults);
+  assert.equal(deduped.length, 2);
+  assert.equal(deduped[1].id, 'proj-custom-glow');
+});
+
 

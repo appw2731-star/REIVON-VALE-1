@@ -3,6 +3,7 @@ import type { PortfolioSnapshot } from '../types/portfolio';
 export const ASSET_PATHS = {
   profileAvatar: '/src/assets/images/profile_reivon_avatar_1795456284630.jpg',
   projectPolytechnicHub: '/images/project-polytechnic-hub.png',
+  projectGlowGiftBd: '/images/project-glow-gift-bd.png',
   projectWeb: '/src/assets/images/project_web_platform_1795456284398.jpg',
   projectAndroid: '/src/assets/images/project_android_app_1795456283913.jpg',
   projectAi: '/src/assets/images/project_ai_system_1795456283667.jpg',
@@ -134,6 +135,24 @@ export const DEFAULT_PORTFOLIO_DATA: PortfolioSnapshot = {
       featured: true,
       isPlaceholder: false,
       sortOrder: 1,
+    },
+    {
+      id: 'proj-glow-gift-bd',
+      titleEn: 'Glow & Gift BD — Online Shopping & Gift Marketplace',
+      titleBn: 'Glow & Gift BD — অনলাইন শপিং ও গিফট মার্কেটপ্লেস',
+      thumbnailUrl: ASSET_PATHS.projectGlowGiftBd,
+      descriptionEn:
+        'A full-featured Bangladeshi e-commerce storefront offering curated lifestyle essentials, electronics, fashion, beauty, watches, and signature gift collections with nationwide Cash on Delivery across all 64 districts, instant product search, wishlist, shopping cart, live order tracking, dark/light mode, and a store admin console.',
+      descriptionBn:
+        'বাংলাদেশের ৬৪ জেলায় ক্যাশ অন ডেলিভারিসহ আধুনিক অনলাইন শপিং ও গিফট মার্কেটপ্লেস — ইলেকট্রনিক্স, ফ্যাশন, বিউটি, ঘড়ি ও গিফট কালেকশন, দ্রুত প্রোডাক্ট সার্চ, উইশলিস্ট, শপিং কার্ট, লাইভ অর্ডার ট্র্যাকিং, ডার্ক/লাইট মোড এবং স্টোর অ্যাডমিন কনসোলসহ।',
+      category: 'websites',
+      technologies: ['Web Platform', 'E-Commerce', 'Order Tracking', 'Dark/Light UI', 'Admin Console', 'Vercel'],
+      liveDemoUrl: 'https://glow-gift-bd.vercel.app/',
+      githubUrl: '',
+      status: 'live',
+      featured: true,
+      isPlaceholder: false,
+      sortOrder: 2,
     },
   ],
   gallery: [],

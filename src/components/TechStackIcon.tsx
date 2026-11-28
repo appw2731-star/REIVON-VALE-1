@@ -318,6 +318,26 @@ export function TechStackIcon({ iconId, className = 'w-4 h-4 shrink-0' }: TechSt
         </svg>
       );
 
+    case 'ecommerce':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+          <path
+            d="M5.5 8.5H18.5L17.6 19.2C17.5 20.1 16.8 20.8 15.9 20.8H8.1C7.2 20.8 6.5 20.1 6.4 19.2L5.5 8.5Z"
+            stroke="currentColor"
+            strokeWidth="1.65"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M8.8 8.5V6.6C8.8 4.8 10.2 3.5 12 3.5C13.8 3.5 15.2 4.8 15.2 6.6V8.5"
+            stroke="currentColor"
+            strokeWidth="1.65"
+            strokeLinecap="round"
+          />
+          <circle cx="9.8" cy="12.2" r="0.9" fill="currentColor" />
+          <circle cx="14.2" cy="12.2" r="0.9" fill="currentColor" />
+        </svg>
+      );
+
     case 'globe':
       return (
         <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">

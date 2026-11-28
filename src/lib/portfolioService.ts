@@ -13,7 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from './firebase';
 import { DEFAULT_PORTFOLIO_DATA } from '../data/defaults';
-import { sanitizeText } from '../utils/validators';
+import { sanitizeText, mergeProjectsWithDefaults } from '../utils/validators';
 import { mergeProfileWithDefaults } from '../utils/profileIdentity';
 import type {
   PortfolioSnapshot,
@@ -74,14 +74,17 @@ export async function fetchPortfolioSnapshot(): Promise<PortfolioSnapshot> {
           updatedAt: toIsoString(d.data().updatedAt),
         }));
 
-    const projects: ProjectItem[] = projectsSnap.empty
-      ? DEFAULT_PORTFOLIO_DATA.projects
-      : projectsSnap.docs.map((d) => ({
-          ...(d.data() as Omit<ProjectItem, 'id'>),
-          id: d.id,
-          createdAt: toIsoString(d.data().createdAt),
-          updatedAt: toIsoString(d.data().updatedAt),
-        }));
+    const remoteProjects: ProjectItem[] = projectsSnap.docs.map((d) => ({
+      ...(d.data() as Omit<ProjectItem, 'id'>),
+      id: d.id,
+      createdAt: toIsoString(d.data().createdAt),
+      updatedAt: toIsoString(d.data().updatedAt),
+    }));
+
+    const projects: ProjectItem[] = mergeProjectsWithDefaults(
+      remoteProjects,
+      DEFAULT_PORTFOLIO_DATA.projects,
+    );
 
     const gallery: GalleryItem[] = gallerySnap.empty
       ? DEFAULT_PORTFOLIO_DATA.gallery

@@ -96,10 +96,10 @@ test('computePortfolioContributorStats aggregates real projects, live builds, an
     DEFAULT_PORTFOLIO_DATA.projects,
     DEFAULT_PORTFOLIO_DATA.skills,
   );
-  assert.equal(stats.publishedProjects, 1);
-  assert.equal(stats.liveProjects, 1);
-  assert.equal(stats.featuredProjects, 1);
-  assert.equal(stats.uniqueTechnologies, 6);
+  assert.equal(stats.publishedProjects, 2);
+  assert.equal(stats.liveProjects, 2);
+  assert.equal(stats.featuredProjects, 2);
+  assert.equal(stats.uniqueTechnologies, 10);
   assert.equal(stats.coreSkills, 6);
   assert.equal(stats.topTechnologies.length, 6);
 

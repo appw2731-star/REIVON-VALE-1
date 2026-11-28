@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ExternalLink, Github, ArrowUpRight, Eye, X } from 'lucide-react';
 import { SafeImage } from './SafeImage';
@@ -16,7 +16,11 @@ interface ProjectCardProps {
   lang: Language;
   t: TranslationDictionary;
   onSelectProject: (project: ProjectItem) => void;
+  activeTechFilter?: string | null;
+  onToggleTechFilter?: (normalizedKey: string, label: string) => void;
 }
+
+const MAX_COLLAPSED_BADGES = 6;
 
 export function ProjectCard({
   project,
@@ -25,10 +29,13 @@ export function ProjectCard({
   lang,
   t,
   onSelectProject,
+  activeTechFilter = null,
+  onToggleTechFilter,
 }: ProjectCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isSummaryPinned, setIsSummaryPinned] = useState(false);
   const [activeTechKey, setActiveTechKey] = useState<string | null>(null);
+  const [showAllBadges, setShowAllBadges] = useState(false);
 
   const title = lang === 'bn' ? project.titleBn : project.titleEn;
   const fullDescription = lang === 'bn' ? project.descriptionBn : project.descriptionEn;
@@ -39,9 +46,17 @@ export function ProjectCard({
   const hasLive = Boolean(project.liveDemoUrl.trim() && isSafeHttpUrl(project.liveDemoUrl));
   const hasGithub = Boolean(project.githubUrl.trim() && isSafeHttpUrl(project.githubUrl));
   const techBadges = resolveProjectTechStack(project);
+  const visibleBadges =
+    showAllBadges || techBadges.length <= MAX_COLLAPSED_BADGES
+      ? techBadges
+      : techBadges.slice(0, MAX_COLLAPSED_BADGES);
+  const hiddenBadgeCount = Math.max(0, techBadges.length - visibleBadges.length);
 
   const isBriefRevealed = isHovered || isSummaryPinned;
-  const activeTech = techBadges.find((badge) => badge.normalizedKey === activeTechKey) ?? null;
+  const activeTech =
+    techBadges.find((badge) => badge.normalizedKey === activeTechKey) ??
+    techBadges.find((badge) => badge.normalizedKey === activeTechFilter) ??
+    null;
 
   return (
     <motion.div
@@ -183,10 +198,10 @@ export function ProjectCard({
                 {title}
               </h3>
 
-              {/* Dynamic SVG Tech Stack Icons Section */}
+              {/* Dynamic Tech Stack Badges Section */}
               {techBadges.length > 0 && (
                 <div
-                  data-testid="project-card-tech-icons"
+                  data-testid="project-card-tech-badges"
                   className="mt-5 pt-4 border-t border-[#C8C8D8]/12"
                 >
                   <div className="flex items-center justify-between gap-2 mb-3">
@@ -197,7 +212,7 @@ export function ProjectCard({
                       data-testid="project-card-tech-readout"
                       style={activeTech ? { color: activeTech.accentHex } : undefined}
                       className={`text-xs font-mono-tabular truncate max-w-[68%] transition-colors duration-150 ${
-                        activeTech ? 'font-semibold' : 'text-[#C8C8D8]/80'
+                        activeTech ? 'font-semibold' : 'text-[#C8C8D8]/75'
                       }`}
                     >
                       {activeTech
@@ -213,77 +228,79 @@ export function ProjectCard({
                   <ul
                     role="list"
                     aria-label={t.projects.techStackLabel}
-                    className="flex flex-wrap items-center gap-2.5"
+                    className="flex flex-wrap items-center gap-2"
                   >
-                    {techBadges.map((badge) => {
+                    {visibleBadges.map((badge) => {
                       const categoryLabel =
                         lang === 'bn' ? badge.categoryLabelBn : badge.categoryLabelEn;
-                      const isSelected = activeTechKey === badge.normalizedKey;
+                      const isFiltered = activeTechFilter === badge.normalizedKey;
+                      const isFocusedOrHovered = activeTechKey === badge.normalizedKey;
+                      const isActive = isFiltered || isFocusedOrHovered;
 
                       return (
-                        <li key={badge.normalizedKey} className="relative">
+                        <li key={badge.normalizedKey}>
                           <button
                             type="button"
+                            data-testid="project-tech-badge"
+                            data-tech-key={badge.normalizedKey}
+                            aria-pressed={onToggleTechFilter ? isFiltered : undefined}
                             aria-label={`${badge.label} — ${categoryLabel}`}
                             title={`${badge.label} (${categoryLabel})`}
                             onMouseEnter={() => setActiveTechKey(badge.normalizedKey)}
+                            onMouseLeave={() =>
+                              setActiveTechKey((prev) =>
+                                prev === badge.normalizedKey ? null : prev
+                              )
+                            }
                             onFocus={() => setActiveTechKey(badge.normalizedKey)}
                             onBlur={() =>
                               setActiveTechKey((prev) =>
                                 prev === badge.normalizedKey ? null : prev
                               )
                             }
-                            onClick={() =>
-                              setActiveTechKey((prev) =>
-                                prev === badge.normalizedKey ? null : badge.normalizedKey
-                              )
-                            }
+                            onClick={() => {
+                              if (onToggleTechFilter) {
+                                onToggleTechFilter(badge.normalizedKey, badge.label);
+                              } else {
+                                setActiveTechKey((prev) =>
+                                  prev === badge.normalizedKey ? null : badge.normalizedKey
+                                );
+                              }
+                            }}
                             style={{
-                              color: badge.accentHex,
-                              borderColor: isSelected
-                                ? badge.accentHex
-                                : `${badge.accentHex}44`,
-                              boxShadow: isSelected
-                                ? `0 8px 20px -8px ${badge.accentHex}99`
+                              borderColor: isActive ? badge.accentHex : undefined,
+                              boxShadow: isFiltered
+                                ? `0 0 0 1px ${badge.accentHex}66, 0 8px 18px -10px ${badge.accentHex}`
                                 : undefined,
                             }}
-                            className={`w-10 h-10 rounded-xl bg-[#0F1020]/90 border flex items-center justify-center transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D9FF] ${
-                              isSelected ? '-translate-y-0.5 scale-105' : 'hover:-translate-y-0.5'
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium whitespace-nowrap shrink-0 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D9FF] ${badge.bgClass} ${badge.borderClass} ${badge.textClass} ${
+                              isActive ? '-translate-y-0.5' : 'hover:-translate-y-0.5'
                             }`}
                           >
                             <TechStackIcon
                               iconId={badge.iconId}
-                              className="w-[19px] h-[19px] shrink-0"
+                              className="w-3.5 h-3.5 shrink-0 opacity-95"
                             />
+                            <span className="font-mono-tabular leading-none">{badge.label}</span>
                           </button>
                         </li>
                       );
                     })}
-                  </ul>
 
-                  {/* Quiet unboxed technology list synchronized with hovered SVG icon */}
-                  <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#C8C8D8]/70">
-                    {techBadges.map((badge, badgeIdx) => {
-                      const isHighlighted = activeTechKey === badge.normalizedKey;
-                      return (
-                        <Fragment key={badge.normalizedKey}>
-                          {badgeIdx > 0 && (
-                            <span aria-hidden="true" className="text-[#C8C8D8]/35">
-                              ·
-                            </span>
-                          )}
-                          <span
-                            style={isHighlighted ? { color: badge.accentHex } : undefined}
-                            className={`transition-colors duration-150 ${
-                              isHighlighted ? 'font-semibold' : ''
-                            }`}
-                          >
-                            {badge.label}
-                          </span>
-                        </Fragment>
-                      );
-                    })}
-                  </div>
+                    {(hiddenBadgeCount > 0 || (showAllBadges && techBadges.length > MAX_COLLAPSED_BADGES)) && (
+                      <li>
+                        <button
+                          type="button"
+                          onClick={() => setShowAllBadges((prev) => !prev)}
+                          className="inline-flex items-center px-2.5 py-1.5 rounded-lg border border-[#C8C8D8]/22 bg-white/[0.04] hover:border-[#00D9FF]/50 text-xs font-mono-tabular text-[#C8C8D8] hover:text-white whitespace-nowrap shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D9FF]"
+                        >
+                          {showAllBadges
+                            ? t.projects.showLessTech
+                            : `+${hiddenBadgeCount} ${t.projects.showMoreTech}`}
+                        </button>
+                      </li>
+                    )}
+                  </ul>
                 </div>
               )}
             </div>

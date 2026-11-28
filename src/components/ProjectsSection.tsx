@@ -5,7 +5,7 @@ import { TechStackBadges } from './TechStackBadges';
 import { ProjectCard } from './ProjectCard';
 import { ProjectActivityWidget } from './ProjectActivityWidget';
 import { filterProjectsByCategory, isSafeHttpUrl } from '../utils/validators';
-import { resolveProjectTechStack } from '../utils/techStack';
+import { filterProjectsByTechnology, resolveProjectTechStack } from '../utils/techStack';
 import type {
   Language,
   ProfileData,
@@ -43,10 +43,18 @@ export function ProjectsSection({
   profile,
 }: ProjectsSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<ProjectCategory | 'all'>('all');
+  const [selectedTech, setSelectedTech] = useState<{ key: string; label: string } | null>(null);
   const [activeProject, setActiveProject] = useState<ProjectItem | null>(null);
 
   const publishedProjects = projects.filter((project) => !project.isPlaceholder);
-  const visibleProjects = filterProjectsByCategory(publishedProjects, selectedCategory);
+  const categoryProjects = filterProjectsByCategory(publishedProjects, selectedCategory);
+  const visibleProjects = filterProjectsByTechnology(categoryProjects, selectedTech?.key ?? null);
+
+  const handleToggleTechFilter = (normalizedKey: string, label: string) => {
+    setSelectedTech((prev) =>
+      prev?.key === normalizedKey ? null : { key: normalizedKey, label }
+    );
+  };
 
   useEffect(() => {
     if (!activeProject) return;
@@ -75,40 +83,74 @@ export function ProjectsSection({
             </p>
           </div>
 
-          {/* Single-row Interactive Category Filter */}
-          <div className="overflow-x-auto pb-1 -mx-1 px-1">
-            <div
-              role="tablist"
-              aria-label={t.projects.heading}
-              className="inline-flex items-center gap-1.5 p-1 rounded-xl bg-[#101020] border border-[#C8C8D8]/16"
-            >
-              {CATEGORIES.map((cat) => {
-                const label = cat === 'all' ? t.projects.allCategories : t.projects.categories[cat];
-                const active = selectedCategory === cat;
-                return (
-                  <button
-                    key={cat}
-                    type="button"
-                    role="tab"
-                    aria-selected={active}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D9FF] ${
-                      active
-                        ? 'bg-gradient-to-r from-[#741BFF] to-[#267BFF] text-white shadow-[0_6px_20px_-6px_rgba(116,27,255,0.85)]'
-                        : 'text-[#C8C8D8]/80 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
+          {/* Single-row Interactive Category Filter & Active Tech Stack Filter */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="overflow-x-auto pb-1 -mx-1 px-1">
+              <div
+                role="tablist"
+                aria-label={t.projects.heading}
+                className="inline-flex items-center gap-1.5 p-1 rounded-xl bg-[#101020] border border-[#C8C8D8]/16"
+              >
+                {CATEGORIES.map((cat) => {
+                  const label = cat === 'all' ? t.projects.allCategories : t.projects.categories[cat];
+                  const active = selectedCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D9FF] ${
+                        active
+                          ? 'bg-gradient-to-r from-[#741BFF] to-[#267BFF] text-white shadow-[0_6px_20px_-6px_rgba(116,27,255,0.85)]'
+                          : 'text-[#C8C8D8]/80 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+
+            {selectedTech && (
+              <div
+                data-testid="active-tech-filter"
+                className="inline-flex items-center gap-2.5 text-xs text-[#C8C8D8]"
+              >
+                <span>
+                  {t.projects.filteringByTech}{' '}
+                  <strong className="text-[#00D9FF] font-mono-tabular font-semibold">
+                    {selectedTech.label}
+                  </strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedTech(null)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#101020] border border-[#C8C8D8]/24 text-[#E6E8F5] hover:border-[#00D9FF]/60 hover:text-white transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D9FF]"
+                >
+                  <X className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>{t.projects.clearTechFilter}</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
         {visibleProjects.length === 0 ? (
-          <div className="glass-panel rounded-3xl p-12 text-center text-sm text-[#C8C8D8]">
-            {t.projects.emptyCategory}
+          <div className="glass-panel rounded-3xl p-12 text-center text-sm text-[#C8C8D8] space-y-4">
+            <p>{t.projects.emptyCategory}</p>
+            {selectedTech && (
+              <button
+                type="button"
+                onClick={() => setSelectedTech(null)}
+                className="btn-chrome inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white"
+              >
+                <X className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>{t.projects.clearTechFilter}</span>
+              </button>
+            )}
           </div>
         ) : (
           <div
@@ -130,6 +172,8 @@ export function ProjectsSection({
                 lang={lang}
                 t={t}
                 onSelectProject={setActiveProject}
+                activeTechFilter={selectedTech?.key ?? null}
+                onToggleTechFilter={handleToggleTechFilter}
               />
             ))}
           </div>

@@ -24,6 +24,7 @@ export type TechIconId =
   | 'threejs'
   | 'formula'
   | 'bilingual'
+  | 'ecommerce'
   | 'code'
   | 'database'
   | 'server'
@@ -114,7 +115,7 @@ const TECH_RULES: TechRule[] = [
     dotClass: 'bg-cyan-400',
   },
   {
-    match: /^(firebase|firestore|firebase\s*auth)$/i,
+    match: /^(firebase(\s*(auth|hosting|studio))?|firestore)$/i,
     category: 'backend',
     iconId: 'firebase',
     accentHex: '#F59E0B',
@@ -184,7 +185,7 @@ const TECH_RULES: TechRule[] = [
     dotClass: 'bg-blue-400',
   },
   {
-    match: /^(java|c\+\+|c#|go|rust|php|html5?)$/i,
+    match: /^(java|c|c\+\+|c#|embedded\s*c|go|rust|php|html5?|matlab)$/i,
     category: 'language',
     iconId: 'code',
     accentHex: '#60A5FA',
@@ -192,6 +193,16 @@ const TECH_RULES: TechRule[] = [
     bgClass: 'bg-blue-500/10',
     textClass: 'text-blue-200',
     dotClass: 'bg-blue-400',
+  },
+  {
+    match: /^(arduino|iot|plc|esp32|raspberry\s*pi|autocad|solidworks|proteus)$/i,
+    category: 'graphics',
+    iconId: 'cube',
+    accentHex: '#38BDF8',
+    borderClass: 'border-sky-400/35 hover:border-sky-300/70',
+    bgClass: 'bg-sky-500/10',
+    textClass: 'text-sky-200',
+    dotClass: 'bg-sky-400',
   },
   {
     match: /^pwa$/i,
@@ -272,6 +283,36 @@ const TECH_RULES: TechRule[] = [
     bgClass: 'bg-sky-400/10',
     textClass: 'text-sky-100',
     dotClass: 'bg-sky-300',
+  },
+  {
+    match: /^(e-?commerce|online\s*store|marketplace|shopping\s*cart|cart\s*&\s*wishlist)$/i,
+    category: 'platform',
+    iconId: 'ecommerce',
+    accentHex: '#F472B6',
+    borderClass: 'border-pink-400/35 hover:border-pink-300/70',
+    bgClass: 'bg-pink-500/10',
+    textClass: 'text-pink-200',
+    dotClass: 'bg-pink-400',
+  },
+  {
+    match: /^(order\s*tracking|admin\s*console|store\s*admin)$/i,
+    category: 'backend',
+    iconId: 'server',
+    accentHex: '#34D399',
+    borderClass: 'border-emerald-400/35 hover:border-emerald-300/70',
+    bgClass: 'bg-emerald-500/10',
+    textClass: 'text-emerald-200',
+    dotClass: 'bg-emerald-400',
+  },
+  {
+    match: /^(dark\/light\s*ui|responsive\s*ui|ui\s*system)$/i,
+    category: 'styling',
+    iconId: 'tailwind',
+    accentHex: '#22D3EE',
+    borderClass: 'border-cyan-400/35 hover:border-cyan-300/70',
+    bgClass: 'bg-cyan-500/10',
+    textClass: 'text-cyan-200',
+    dotClass: 'bg-cyan-400',
   },
   {
     match: /^(netlify|github|docker|aws|gcp)$/i,
@@ -421,4 +462,20 @@ export function buildBriefProjectDescription(rawDescription: string, maxChars = 
     .trim();
   return `${cleaned}…`;
 }
+
+/**
+ * Filters a list of projects to those matching a selected normalized technology key,
+ * checking resolved tech stack badges (both explicit and auto-detected technologies).
+ */
+export function filterProjectsByTechnology(
+  projects: ProjectItem[],
+  normalizedTechKey: string | null,
+): ProjectItem[] {
+  const target = normalizedTechKey?.trim().toLowerCase().replace(/\s+/g, ' ');
+  if (!target) return projects;
+  return projects.filter((project) =>
+    resolveProjectTechStack(project).some((badge) => badge.normalizedKey === target),
+  );
+}
+
 

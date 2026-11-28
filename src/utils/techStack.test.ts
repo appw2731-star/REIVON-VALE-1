@@ -4,8 +4,10 @@ import {
   buildBriefProjectDescription,
   classifyTechnology,
   extractTechnologiesFromText,
+  filterProjectsByTechnology,
   resolveProjectTechStack,
 } from './techStack.ts';
+import type { ProjectItem } from '../types/portfolio';
 
 test('classifyTechnology automatically highlights React, Firebase, Tailwind, and AI with semantic accents', () => {
   const react = classifyTechnology('React');
@@ -43,6 +45,10 @@ test('classifyTechnology resolves specific SVG icon IDs for Vercel, PWA, TypeScr
   assert.equal(classifyTechnology('Formula Hub').iconId, 'formula');
   assert.equal(classifyTechnology('Bilingual EN/বাংলা').iconId, 'bilingual');
   assert.equal(classifyTechnology('Three.js').iconId, 'threejs');
+  assert.equal(classifyTechnology('E-Commerce').iconId, 'ecommerce');
+  assert.equal(classifyTechnology('Order Tracking').iconId, 'server');
+  assert.equal(classifyTechnology('Dark/Light UI').iconId, 'tailwind');
+  assert.equal(classifyTechnology('Admin Console').iconId, 'server');
 });
 
 test('resolveProjectTechStack deduplicates explicit technologies case-insensitively', () => {
@@ -112,4 +118,68 @@ test('buildBriefProjectDescription returns concise clean summaries for hover ove
   assert.equal(cleanCut.endsWith('&…'), false);
   assert.equal(cleanCut.endsWith('…'), true);
 });
+
+test('classifyTechnology recognizes engineering/academic stack tools and TailwindCSS/Firebase variants', () => {
+  assert.equal(classifyTechnology('TailwindCSS').iconId, 'tailwind');
+  assert.equal(classifyTechnology('Firebase Auth').iconId, 'firebase');
+  assert.equal(classifyTechnology('Arduino').iconId, 'cube');
+  assert.equal(classifyTechnology('AutoCAD').iconId, 'cube');
+  assert.equal(classifyTechnology('MATLAB').iconId, 'code');
+});
+
+test('filterProjectsByTechnology filters projects dynamically by explicit or auto-detected tech badges', () => {
+  const base: Omit<ProjectItem, 'id' | 'titleEn' | 'descriptionEn' | 'technologies' | 'liveDemoUrl'> = {
+    titleBn: 'প্রজেক্ট',
+    thumbnailUrl: '',
+    descriptionBn: 'বিবরণ',
+    category: 'websites',
+    githubUrl: '',
+    status: 'live',
+    featured: true,
+    isPlaceholder: false,
+    sortOrder: 1,
+  };
+
+  const projects: ProjectItem[] = [
+    {
+      ...base,
+      id: 'p-academic',
+      titleEn: 'Polytechnic Hub',
+      descriptionEn: 'Study portal for diploma students.',
+      technologies: ['React', 'Firebase', 'Tailwind CSS'],
+      liveDemoUrl: 'https://polytechnic-hub-alpha.vercel.app/',
+    },
+    {
+      ...base,
+      id: 'p-store',
+      titleEn: 'Glow & Gift BD',
+      descriptionEn: 'E-commerce storefront deployed on Vercel.',
+      technologies: ['E-Commerce', 'Vercel'],
+      liveDemoUrl: 'https://glow-gift-bd.vercel.app/',
+    },
+    {
+      ...base,
+      id: 'p-inferred',
+      titleEn: 'Power Lab Notes',
+      descriptionEn: 'Built with React and Firebase for Bogra Polytechnic students.',
+      technologies: [],
+      liveDemoUrl: 'https://power-lab.vercel.app/',
+    },
+  ];
+
+  assert.equal(filterProjectsByTechnology(projects, null).length, 3);
+  assert.deepEqual(
+    filterProjectsByTechnology(projects, 'react').map((p) => p.id),
+    ['p-academic', 'p-inferred'],
+  );
+  assert.deepEqual(
+    filterProjectsByTechnology(projects, 'tailwind css').map((p) => p.id),
+    ['p-academic'],
+  );
+  assert.deepEqual(
+    filterProjectsByTechnology(projects, 'e-commerce').map((p) => p.id),
+    ['p-store'],
+  );
+});
+
 
